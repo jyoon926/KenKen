@@ -1,0 +1,89 @@
+<!Doctype html>
+
+<html ng-app="kenkenApp" lang="en">
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.min.js"></script>
+    <script src="kenken-services.js"></script>
+    <script src="kenken-solver.js"></script>
+    <script src="kenken-controller.js"></script>
+    <script src="kenken-directives.js"></script>
+    <script src="kenken-filters.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="fonts/fonts.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretty KenKen</title>
+    <link rel="shortcut icon" href="img/icon.png" />
+</head>
+
+<body ng-controller="KenkenController" ng-keydown="keydown($event)" ng-keyup="keyup($event)">
+    <div id="container">
+        <div class="top">
+            <div class="group">
+                <label>Size:</label>
+                <select class="size-select" ng-model="boardSize" ng-options="n for n in ['3','4','5','6']"
+                        ng-change="newBoard()">
+                </select>
+            </div>
+            <div class="group">
+                <label>Operations:</label>
+                    <!-- can't use ng-options here because the option labels contain html entities -->
+                <select class="operator" ng-model="ops" ng-change="newBoard()">
+                    <option value="+-">&plus; &minus;</option>
+                    <option value="+x">&plus; &times;</option>
+                    <option value="+-x">&plus; &minus; &times;</option>
+                    <option value="+-x/">&plus; &minus; &times; &divide;</option>
+                </select>
+            </div>
+        </div>
+        <table id="board" tabindex="0" ng-blur="cursorHidden=true" ng-focus="cursorHidden=false">
+            <div class="clock">
+                <p>Timer: </p>
+                {{ time | timer }} <span ng-show="solved">SOLVED!</span>
+            </div>
+            <tr ng-repeat="row in board">
+                <td ng-repeat="cell in row"
+                    kenken-cell-walls
+                    ng-class="{cursor: cursorAt(cell.i, cell.j), cursorShadow: isCursorShadow(cell), lit: isLit(cell), softLit: isSoftLit(cell), good: solved || checksRight(cell), bad: checksWrong(cell)}"
+                    ng-click="setCursor($parent.$index, $index)">
+                    {{ cell.guess }}
+                    <div class="label" ng-show="cell.isFirstInCage">
+                        {{ cages[cell.cage].total }}<span class="operator" ng-bind-html="cages[cell.cage].op | operators"></span>
+                    </div>
+                    <div class="possible" ng-hide="cell.guess || !showPossibles">
+                        <span ng-repeat="value in cell.possible track by $index"><span ng-if="value === true">{{ $index }}</span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr ng-show="solver.message()">
+                <!-- TODO get colspan from board size -->
+                <td colspan="8" class="solver">
+                    <p class="label">{{ solver.pass() }}</p>
+                    <p class="message" ng-bind-html="solver.message() | operators"></p>
+                </td>
+            </tr>
+        </table>
+        <div class="controls">
+            <p>enter: check puzzle</p>
+            <p>?: reveal square</p>
+            <p>p: show/hide possible values</p>
+            <p>r: reset</p>
+            <p>n: new puzzle</p>
+            <!-- <p>s: solve</p> -->
+            <p>esc: undo</p>
+        </div>
+        <div class="help">
+            <!-- <p>return: check puzzle</p>
+            <p>?: reveal square</p>
+            <p>p: show/hide possible values</p>
+            <p>r: reset</p>
+            <p>n: new puzzle</p>
+            <p>s: solve</p>
+            <p>esc: undo</p> -->
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,227 @@
+$bg: #2B2B2C;
+$color: #D8A0A6;
+$bad: red;
+$good: lightgreen;
+$lit: cyan;
+$softLit: lightcyan;
+$cursor: #3e3e42;
+$cursorShadow: lightyellow;
+* {
+    font-family: "Good Sans";
+    margin: 0; padding: 0;
+    color: $color;
+    transition: .2s;
+    a {
+        text-decoration: none;
+    }
+}
+html {
+    overflow-x: hidden;
+    font-size: 18px;
+    background-color: $bg;
+}
+body {
+    overflow-x: hidden;
+    background-color: $bg;
+}
+
+#container {
+    width: 100vw;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 120px 40px;
+}
+.controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 20px;
+    position: fixed;
+    width: 100vw;
+    bottom: 0;
+    left: 0;
+    border-top: 2px solid $color;
+    gap: 20px 60px;
+    flex-wrap: wrap;
+    background: $bg;
+    z-index: 100;
+    .selection {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    label {
+        padding-right: 10px;
+    }
+}
+.top {
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px 30px;
+    position: fixed;
+    top: 0;
+    background: $bg;
+    z-index: 100;
+    padding: 10px 40px;
+    flex-wrap: wrap;
+    .group {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+}
+table {
+    border-collapse: collapse;
+    margin: 60px 0;
+}
+table:focus {
+    outline: none;
+}
+.clock {
+    border-bottom: 2px solid $color;
+    padding: 10px;
+    min-width: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    p {
+        margin-right: 10px;
+    }
+    span {
+        margin-left: 10px;
+    }
+}
+td {
+    font-size: 40px;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    border: 2px dashed rgba($color, 0.2);
+}
+
+.label {
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    font-size: 18px;
+}
+.label .operator {
+}
+.possible {
+    opacity: 0.5;
+    font-size: 18px;
+}
+.cursorShadow {
+    background-color: $cursorShadow;
+}
+.cursor {
+    background-color: $cursor;
+}
+.softLit {
+    background-color: $softLit;
+}
+.lit {
+    background-color: $lit;
+}
+.good {
+    background-color: $good;
+}
+.bad {
+    background-color: $bad;
+}
+.wall-top {
+    border-top: 2px solid $color;
+}
+.wall-left {
+    border-left: 2px solid $color;
+}
+.wall-bottom {
+    border-bottom: 2px solid $color;
+}
+.wall-right {
+    border-right: 2px solid $color;
+}
+.solver-message {
+    text-align: center;
+}
+.solver .label {
+    top: 0;
+    text-align: left
+}
+.solver .message {
+}
+.solver .possibles {
+    opacity: 0.5;
+    font-size: 18px;
+}
+select {
+    all: unset;
+    appearance: menulist;
+    white-space: pre;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1em;
+    border: 2px solid $color;
+    padding: 3px;
+    line-height: 1;
+    border-radius: 0 !important;
+    box-sizing: border-box;
+    background-color: $bg;
+    transition: .3s;
+    &:focus {
+        background-color: $color;
+        color: $bg;
+        border-radius: 0 !important;
+        * {
+            color: $bg;
+        }
+    }
+}
+.help p, .solver p {
+    margin: 0;
+}
+
+@media screen and (max-width: 750px) {
+    td {
+        font-size: 30px;
+        width: 60px;
+        height: 60px;
+    }
+    .controls {
+        gap: 10px 40px;
+        padding: 15px;
+    }
+}
+@media screen and (max-width: 500px) {
+    .label {
+        font-size: 10px;
+    }
+    .possible {
+        font-size: 16px;
+    }
+    .solver .possibles {
+        font-size: 16px;
+    }
+    html {
+        font-size: 16px;
+    }
+    td {
+        font-size: 20px;
+        width: 54px;
+        height: 54px;
+    }
+}
