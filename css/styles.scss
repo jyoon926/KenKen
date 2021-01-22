@@ -1,227 +1,213 @@
 $bg: #2B2B2C;
 $color: #D8A0A6;
-$bad: red;
-$good: lightgreen;
-$lit: cyan;
-$softLit: lightcyan;
-$cursor: #3e3e42;
-$cursorShadow: lightyellow;
+$accent: #54575c;
 * {
-    font-family: "Good Sans";
-    margin: 0; padding: 0;
+    padding: 0; margin: 0;
+    font-family:"Good Sans";
     color: $color;
-    transition: .2s;
-    a {
-        text-decoration: none;
-    }
+    text-decoration: none;
 }
 html {
-    overflow-x: hidden;
-    font-size: 18px;
-    background-color: $bg;
-}
-body {
-    overflow-x: hidden;
     background-color: $bg;
 }
 
-#container {
-    width: 100vw;
-    min-height: 100vh;
-    box-sizing: border-box;
+#header {
+    position: fixed;
+    width: 100%;
+    top: 0; left: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 120px 40px;
-}
-.controls {
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    box-sizing: border-box;
-    padding: 20px;
-    position: fixed;
-    width: 100vw;
-    bottom: 0;
-    left: 0;
-    border-top: 2px solid $color;
-    gap: 20px 60px;
-    flex-wrap: wrap;
-    background: $bg;
-    z-index: 100;
-    .selection {
+    .logo {
+        font-size: 2em;
+        padding: 20px;
+    }
+    ul {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
         align-items: center;
-    }
-    label {
-        padding-right: 10px;
+        gap: 30px;
+        padding: 20px;
+        border-bottom: 2px solid $color;
+        label {
+            padding-right: 5px;
+        }
+        select {
+            all: unset;
+            appearance: menulist;
+            white-space: pre;
+            background-color: $accent;
+            box-shadow: 0 10px 20px -10px $accent;
+            padding: 5px 7px;
+            line-height: 1;
+            border-radius: 8px !important;
+            box-sizing: border-box;
+            transition: .3s;
+            &:focus {
+                background-color: $color;
+                color: $bg;
+                box-shadow: 0 10px 20px -10px $color;
+                * {
+                    color: $bg;
+                }
+            }
+        }
     }
 }
-.top {
+#container {
     width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding: 140px 40px;
+    #timer {
+        padding: 6px 10px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        text-align: center;
+        color: $bg;
+        background-color: $color;
+        box-shadow: 0 4px 20px -10px $color;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        .time {
+            color: $bg;
+            text-align: center;
+        }
+    }
+    table {
+        border: 2px solid $color;
+        border-collapse: collapse;
+        tr {
+            border: 2px solid $color;
+            border-collapse: collapse;
+            td {
+                border: 2px solid $color;
+                border-collapse: collapse;
+                font-size: 2em;
+                text-align: center;
+                input {
+                    all: unset;
+                    -webkit-appearance: none;
+                    -moz-appearance: textfield;
+                    width: 3em;
+                    height: 3em;
+                    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+#footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0; left: 0;
+    display: flex;
+    box-sizing: border-box;
+    padding: 20px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 10px 30px;
-    position: fixed;
-    top: 0;
-    background: $bg;
-    z-index: 100;
-    padding: 10px 40px;
+    gap: 15px;
     flex-wrap: wrap;
-    .group {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-    }
-}
-table {
-    border-collapse: collapse;
-    margin: 60px 0;
-}
-table:focus {
-    outline: none;
-}
-.clock {
-    border-bottom: 2px solid $color;
-    padding: 10px;
-    min-width: 140px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    p {
-        margin-right: 10px;
-    }
-    span {
-        margin-left: 10px;
-    }
-}
-td {
-    font-size: 40px;
-    position: relative;
-    width: 80px;
-    height: 80px;
-    text-align: center;
-    border: 2px dashed rgba($color, 0.2);
-}
-
-.label {
-    position: absolute;
-    top: 3px;
-    left: 6px;
-    font-size: 18px;
-}
-.label .operator {
-}
-.possible {
-    opacity: 0.5;
-    font-size: 18px;
-}
-.cursorShadow {
-    background-color: $cursorShadow;
-}
-.cursor {
-    background-color: $cursor;
-}
-.softLit {
-    background-color: $softLit;
-}
-.lit {
-    background-color: $lit;
-}
-.good {
-    background-color: $good;
-}
-.bad {
-    background-color: $bad;
-}
-.wall-top {
-    border-top: 2px solid $color;
-}
-.wall-left {
-    border-left: 2px solid $color;
-}
-.wall-bottom {
-    border-bottom: 2px solid $color;
-}
-.wall-right {
-    border-right: 2px solid $color;
-}
-.solver-message {
-    text-align: center;
-}
-.solver .label {
-    top: 0;
-    text-align: left
-}
-.solver .message {
-}
-.solver .possibles {
-    opacity: 0.5;
-    font-size: 18px;
-}
-select {
-    all: unset;
-    appearance: menulist;
-    white-space: pre;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1em;
-    border: 2px solid $color;
-    padding: 3px;
-    line-height: 1;
-    border-radius: 0 !important;
-    box-sizing: border-box;
-    background-color: $bg;
-    transition: .3s;
-    &:focus {
-        background-color: $color;
-        color: $bg;
-        border-radius: 0 !important;
-        * {
+    a {
+        padding: 12px 16px;
+        background-color: $accent;
+        color: $color;
+        box-shadow: 0 8px 20px -10px $accent;
+        border-radius: 8px;
+        transition-duration: .3s;
+        &:hover {
+            cursor: pointer;
+            background-color: $color;
             color: $bg;
+            box-shadow: 0 8px 20px -10px $color;
         }
     }
 }
-.help p, .solver p {
-    margin: 0;
+
+@media screen and (max-height: 740px) {
+    .cell {
+        width: 2.5em !important;
+        height: 2.5em !important;
+    }
 }
 
-@media screen and (max-width: 750px) {
-    td {
-        font-size: 30px;
-        width: 60px;
-        height: 60px;
+@media screen and (max-height: 675px) {
+    #container {
+        padding: 80px 20px;
     }
-    .controls {
-        gap: 10px 40px;
-        padding: 15px;
+    .cell {
+        width: 2em !important;
+        height: 2em !important;
     }
 }
-@media screen and (max-width: 500px) {
-    .label {
-        font-size: 10px;
-    }
-    .possible {
-        font-size: 16px;
-    }
-    .solver .possibles {
-        font-size: 16px;
-    }
+
+@media screen and (max-width: 810px) {
     html {
-        font-size: 16px;
+        font-size: 14px;
     }
-    td {
-        font-size: 20px;
-        width: 54px;
-        height: 54px;
+    #header {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        .logo {
+            font-size: 2em;
+            padding: 20px 0 0 20px;
+        }
+        ul {
+            gap: 20px;
+            padding: 10px 0 0 20px;
+            border-bottom: 0px solid $color;
+        }
+    }
+    #footer {
+        width: 100%;
+        bottom: 0; left: 0;
+        padding: 20px;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 10px;
+        a {
+            padding: 7px 12px;
+            background-color: $accent;
+            color: $color;
+            box-shadow: 0 7px 17px -9px $accent;
+            &:hover {
+                cursor: default;
+                background-color: $accent;
+                color: $color;
+                box-shadow: 0 7px 17px -9px $accent;
+            }
+        }
+    }
+}
+@media screen and (max-width: 810px) and (max-height: 600px) {
+    #container {
+        min-height: 0;
+        padding: 160px 20px 40px 20px;
+    }
+    #footer {
+        position: static;
+    }
+}
+
+@media screen and (max-width: 350px) {
+    html {
+        font-size: 12px;
     }
 }
