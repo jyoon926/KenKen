@@ -1,13 +1,19 @@
-var key = [];
-var focus = [];
-var seconds = 0;
-var minutes = 0;
-var hours = 0;
-var pause = false;
+let _key = [];
+let _focus = [];
+let _seconds = 0;
+let _minutes = 0;
+let _hours = 0;
+let _pause = false;
+let _cells = [];
+let _numberOfCellGroups = 0;
+let _operators = [];
 
 function Start() {
+    _started = true;
     CreateInputs(4);
-    key = Generate(4);
+    _key = Generate(4);
+    GenerateCells(4);
+    RenderCells(4);
     StartTimer();
 }
 
@@ -18,7 +24,7 @@ function CreateInputs(width) {
     for(let i = 0; i < width; i++) {
         inside += "<tr>";
         for(let j = 0; j < width; j++) {
-            inside += "<td><input type='text' maxlength='1' oninput='this.value=this.value.replace(/[^0-9]/g,'');' autocomplete='off' id=" + i + ',' + j + " class='cell' onfocus='UpdateFocus()' form='grid' /></td>";
+            inside += "<td><div class='label' id='label" + i + ',' + j + "'></div><input type='text' maxlength='1' autocomplete='off' id=" + i + ',' + j + " class='cell' onfocus='UpdateFocus()' form='grid' /></td>";
         }
         inside += "</tr>";
     }
@@ -26,11 +32,7 @@ function CreateInputs(width) {
 }
 
 function Generate(width) {
-    return GenerateGrid(width);
-}
-
-function GenerateGrid(width) {
-    var grid = [];
+    let grid = [];
     for(let i = 0; i < width; i++) {
         grid[i] = [];
         for(let j = 0; j < width; j++) {
@@ -41,11 +43,11 @@ function GenerateGrid(width) {
 }
 
 function RandomizeGrid(grid) {
-    for (let i = 0; i < 1000000; i++) {
-        let a = getRandomInt(grid.length);
-        let b = getRandomInt(grid.length);
-        let c = getRandomInt(grid.length);
-        let d = getRandomInt(grid.length);
+    for (let i = 0; i < 100000; i++) {
+        let a = GetRandomInt(grid.length);
+        let b = GetRandomInt(grid.length);
+        let c = GetRandomInt(grid.length);
+        let d = GetRandomInt(grid.length);
         let temp = grid[a];
         grid[a] = grid[b];
         grid[b] = temp;
@@ -58,94 +60,280 @@ function RandomizeGrid(grid) {
     return grid;
 }
 
-function getRandomInt(max) {
+function GetRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
+}
+
+function GenerateCells(width) {
+    _cells = [];
+    _operators = [];
+    _numberOfCellGroups = 0;
+    let index = 0;
+    let filled = false;
+    for(let i = 0; i < width; i++) {
+        _cells[i] = [];
+        for(let j = 0; j < width; j++) {
+            _cells[i][j] = -1;
+        }
+    }
+    while (!filled) {
+        let startCell = GetFirstEmptyCell(width);
+        if (startCell[0] != -1) {
+            let numberOfCells = GetRandomInt(3) + 2;
+            _cells[startCell[0]][startCell[1]] = index;
+            for (let i = 0; i < numberOfCells; i++) {
+                let firstEmpty = GetFirstEmptyCell(width);
+                if (firstEmpty[0] != -1) {
+                    let direction = GetRandomInt(3);
+                    let x = 0;
+                    let y = 0;
+                    if (direction == 0) {
+                        x = startCell[0];
+                        y = startCell[1] + 1;
+                    } else if (direction == 1) {
+                        x = startCell[0] + 1;
+                        y = startCell[1];
+                    } else if (direction == 2) {
+                        x = startCell[0];
+                        y = startCell[1] - 1;
+                    } else {
+                        x = startCell[0] - 1;
+                        y = startCell[1];
+                    }
+                    if (x >= 0 && x < width && y >= 0 && y < width) {
+                        if (_cells[x][y] == -1) {
+                            _cells[x][y] = index;
+                        }
+                    } else {
+                        i--;
+                    }
+                }
+            }
+            index++;
+            _numberOfCellGroups++;
+        } else {
+            filled = true;
+        }
+    }
+    for (let i = 0; i < _numberOfCellGroups; i++) {
+        numberOfCells = 0;
+        startCell = [-1,-1];
+        for (let x = 0; x < width; x++) {
+            for (let y = 0; y < width; y++) {
+                if (_cells[x][y] == i) {
+                    numberOfCells++;
+                    if (startCell[0] == -1)
+                        startCell = [x,y];
+                }
+            }
+        }
+        if (numberOfCells > 1) {
+            operator = GetRandomInt(4);
+            if (operator == 0) {
+                sum = 0;
+                for (let x = 0; x < width; x++) {
+                    for (let y = 0; y < width; y++) {
+                        if (_cells[x][y] == i) {
+                            sum += _key[x][y];
+                        }
+                    }
+                }
+                _operators[i] = sum + "+";
+            } else if (operator == 1) {
+                difference = -10;
+                for (let x = 0; x < width; x++) {
+                    for (let y = 0; y < width; y++) {
+                        if (_cells[x][y] == i) {
+                            if (difference == -10)
+                                difference = _key[x][y];
+                            else
+                                difference -= _key[x][y];
+                        }
+                    }
+                }
+                if (difference < 0) {
+                    i--;
+                } else
+                    _operators[i] = difference + "-";
+            } else if (operator == 2) {
+                product = 1;
+                for (let x = 0; x < width; x++) {
+                    for (let y = 0; y < width; y++) {
+                        if (_cells[x][y] == i) {
+                            product *= _key[x][y];
+                        }
+                    }
+                }
+                _operators[i] = product + "x";
+            } else {
+                quotient = -10;
+                for (let x = 0; x < width; x++) {
+                    for (let y = 0; y < width; y++) {
+                        if (_cells[x][y] == i) {
+                            if (quotient == -10)
+                                quotient = _key[x][y];
+                            else
+                                quotient /= _key[x][y];
+                        }
+                    }
+                }
+                if (quotient < 0 || quotient % 1 != 0) {
+                    i--;
+                } else
+                    _operators[i] = quotient + "÷";
+            }
+        } else {
+            _operators[i] = _key[startCell[0]][startCell[1]];
+        }
+        document.getElementById("label" + startCell[0] + "," + startCell[1]).innerHTML = _operators[i];
+    }
+}
+
+function GetFirstEmptyCell(width) {
+    for (let i = 0; i < width; i++) {
+        for (let j = 0; j < width; j++) {
+            if (_cells[i][j] == -1) {
+                return [i, j];
+            }
+        }
+    }
+    return [-1, -1];
+}
+
+function NumberOfEmptyCells(width) {
+    let count = 0;
+    for (let i = 0; i < width; i++) {
+        for (let j = 0; j < width; j++) {
+            if (_cells[i][j] == -1) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+function RenderCells(width) {
+    let wide = "4px solid #699A9E";
+    let thin = "2px solid #699A9E";
+    for (let i = 0; i < width; i++) {
+        for (let j = 0; j < width; j++) {
+            let cell = document.getElementById(i + "," + j);
+            if (i == 0) {
+                cell.style.borderTop = wide;
+            } else {
+                if (_cells[i - 1][j] != _cells[i][j]) {
+                    cell.style.borderTop = thin;
+                }
+            }
+            if (i == width - 1) {
+                cell.style.borderBottom = wide;
+            } else {
+                if (_cells[i + 1][j] != _cells[i][j]) {
+                    cell.style.borderBottom = thin;
+                }
+            }
+            if (j == 0) {
+                cell.style.borderLeft = wide;
+            } else {
+                if (_cells[i][j - 1] != _cells[i][j]) {
+                    cell.style.borderLeft = thin;
+                }
+            }
+            if (j == width - 1) {
+                cell.style.borderRight = wide;
+            } else {
+                if (_cells[i][j + 1] != _cells[i][j]) {
+                    cell.style.borderRight = thin;
+                }
+            }
+        }
+    }
 }
 
 function StartTimer() {
     setTimeout(time, 1000, 1);
 }
+
 const time = delay => {
-    if (!pause) {
-        if (seconds < 59) {
-            document.getElementById("seconds").innerHTML = ("0" + (seconds + 1)).slice(-2);
-            document.getElementById("minutes").innerHTML =("0" + (minutes)).slice(-2);
-            document.getElementById("hours").innerHTML =("0" + (hours)).slice(-2);
-            seconds++;
+    if (!_pause) {
+        if (_seconds < 59) {
+            document.getElementById("seconds").innerHTML = ("0" + (_seconds + 1)).slice(-2);
+            document.getElementById("minutes").innerHTML =("0" + (_minutes)).slice(-2);
+            document.getElementById("hours").innerHTML =("0" + (_hours)).slice(-2);
+            _seconds++;
         }
         else {
-            if (minutes < 59) {
+            if (_minutes < 59) {
                 document.getElementById("seconds").innerHTML = ("0" + (0)).slice(-2);
-                document.getElementById("minutes").innerHTML = ("0" + (minutes + 1)).slice(-2);
-                document.getElementById("hours").innerHTML = ("0" + (hours)).slice(-2);
-                seconds = 0;
-                minutes++;
+                document.getElementById("minutes").innerHTML = ("0" + (_minutes + 1)).slice(-2);
+                document.getElementById("hours").innerHTML = ("0" + (_hours)).slice(-2);
+                _seconds = 0;
+                _minutes++;
             }
             else {
                 document.getElementById("seconds").innerHTML = ("0" + (0)).slice(-2);
                 document.getElementById("minutes").innerHTML = ("0" + (0)).slice(-2);
-                document.getElementById("hours").innerHTML = ("0" + (hours + 1)).slice(-2);
-                seconds = 0;
-                minutes = 0;
-                hours++;
+                document.getElementById("hours").innerHTML = ("0" + (_hours + 1)).slice(-2);
+                _seconds = 0;
+                _minutes = 0;
+                _hours++;
             }
         }
         StartTimer();
     }
 };
+
 function ResetTimer() {
-    pause = true;
-    seconds = 0;
-    minutes = 0;
-    hours = 0;
+    _pause = true;
+    _seconds = 0;
+    _minutes = 0;
+    _hours = 0;
     document.getElementById("seconds").innerHTML = ("0" + (0)).slice(-2);
     document.getElementById("minutes").innerHTML = ("0" + (0)).slice(-2);
     document.getElementById("hours").innerHTML = ("0" + (0)).slice(-2);
     setTimeout(function() {
-        pause = false;
+        _pause = false;
         StartTimer();
     }, 1000);
 }
 
 function ChangeSize() {
+    NewPuzzle();
+}
+
+function NewPuzzle() {
     let select = document.getElementById("size");
-    var width = select.options[select.selectedIndex].text;
+    let width = select.options[select.selectedIndex].text;
     CreateInputs(width);
-    key = Generate(width);
+    _key = Generate(width);
+    GenerateCells(width);
+    RenderCells(width);
     ResetTimer();
 }
 
 function ResetPuzzle() {
     let select = document.getElementById("size");
-    var width = select.options[select.selectedIndex].text;
+    let width = select.options[select.selectedIndex].text;
     CreateInputs(width);
 }
 
-function NewPuzzle() {
-    let select = document.getElementById("size");
-    var width = select.options[select.selectedIndex].text;
-    CreateInputs(width);
-    key = Generate(width);
-    ResetTimer();
+function RevealSquare() {
+    let cell = document.getElementById(_focus[0] + "," + _focus[1]);
+    cell.value = _key[_focus[0]][_focus[1]];
+}
+
+function ShowSolution() {
+    let cells = document.getElementsByClassName("cell");
+    for (let i = 0; i < _key.length; i++) {
+        for (let j = 0; j < _key.length; j++) {
+            let cell = cells[j + i * _key.length];
+            cell.value = _key[i][j];
+        }
+    }
 }
 
 function UpdateFocus() {
     let current = document.activeElement;
     let position = current.getAttribute("id");
-    focus = [parseInt(position.charAt(0)), parseInt(position.charAt(2))];
-}
-
-function RevealSquare() {
-    let cell = document.getElementById(focus[0] + "," + focus[1]);
-    cell.value = key[focus[0]][focus[1]];
-}
-
-function ShowAnswer() {
-    let cells = document.getElementsByClassName("cell");
-    for (let i = 0; i < key.length; i++) {
-        for (let j = 0; j < key.length; j++) {
-            let cell = cells[j + i * key.length];
-            cell.value = key[i][j];
-        }
-    }
+    _focus = [parseInt(position.charAt(0)), parseInt(position.charAt(2))];
 }

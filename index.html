@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<!-- 
+    Created by Jacob Yoon.
+    Last updated on 08/19/2021.
+ -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +16,8 @@
     <script src="js/kenken.js"></script>
 </head>
 <body onload="Start()">
+
+    <div id="background"></div>
     
     <div id="header">
         <a href="/" class="logo">Pretty KenKen</a>
@@ -19,8 +27,8 @@
                 <select id="size" onchange="ChangeSize()">
                     <option value="3">3</option>
                     <option value="4" selected>4</option>
-                    <!-- <option value="5">5</option>
-                    <option value="6">6</option> -->
+                    <option value="5">5</option>
+                    <option value="6">6</option>
                 </select>
             </div>
             <div class="operations">
@@ -49,12 +57,10 @@
     </div>
 
     <div id="footer">
-        <a onclick="ResetPuzzle()">Reset Puzzle</a>
         <a onclick="NewPuzzle()">New Puzzle</a>
-        <!-- <a>Undo</a> -->
+        <a onclick="ResetPuzzle()">Reset</a>
         <a onclick="RevealSquare()">Reveal Square</a>
-        <a onclick="ShowAnswer()">Show Answer</a>
-        <a onclick="ResetTimer()">Reset Timer</a>
+        <a onclick="ShowSolution()">Solution</a>
     </div>
 
 </body>
