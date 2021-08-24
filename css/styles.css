@@ -243,6 +243,7 @@ html {
   position: absolute;
   padding: 8px;
   font-size: 1rem;
+  opacity: .75;
 }
 
 #container #gridParent #grid .row .cell input {
@@ -355,6 +356,12 @@ html {
     max-width: none;
     min-width: none;
     min-height: none;
+  }
+  #container #gridParent #grid .row .cell .label {
+    font-size: 4vw;
+  }
+  #container #gridParent #grid .row .cell input {
+    font-size: 7vw !important;
   }
   #footer {
     width: 100%;

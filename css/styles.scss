@@ -153,6 +153,7 @@ html {
                         position: absolute;
                         padding: 8px;
                         font-size: 1rem;
+                        opacity: .75;
                     }
                     input {
                         all: unset;
@@ -235,6 +236,14 @@ html {
             max-width: none;
             min-width: none;
             min-height: none;
+            #grid .row .cell {
+                .label {
+                    font-size: 4vw;
+                }
+                input {
+                    font-size: 7vw !important;
+                }
+            }
         }
     }
     #footer {
