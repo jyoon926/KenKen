@@ -18,24 +18,27 @@ function Start() {
 }
 
 function CreateInputs(width) {
-    table = document.getElementById("table");
-    table.innerHTML = "";
+    grid = document.getElementById("grid");
+    grid.innerHTML = "";
     let inside = "";
-    for(let i = 0; i < width; i++) {
-        inside += "<tr>";
-        for(let j = 0; j < width; j++) {
-            inside += "<td><div class='label' id='label" + i + ',' + j + "'></div><input type='text' maxlength='1' autocomplete='off' id=" + i + ',' + j + " class='cell' onfocus='UpdateFocus()' form='grid' /></td>";
+    for (let i = 0; i < width; i++) {
+        inside += "<div class='row'>";
+        for (let j = 0; j < width; j++) {
+            inside += "<div class='cell'>";
+            inside += "<div class='label' id='label" + i + ',' + j + "'></div>";
+            inside += "<input type='text' maxlength='1' autocomplete='off' id='" + i + ',' + j + "' class='input' onfocus='UpdateFocus()' form='form' />";
+            inside += "</div>";
         }
-        inside += "</tr>";
+        inside += "</div>";
     }
-    table.innerHTML = inside;
+    grid.innerHTML = inside;
 }
 
 function Generate(width) {
     let grid = [];
-    for(let i = 0; i < width; i++) {
+    for (let i = 0; i < width; i++) {
         grid[i] = [];
-        for(let j = 0; j < width; j++) {
+        for (let j = 0; j < width; j++) {
             grid[i][j] = (i + j) % width + 1;
         }
     }
@@ -70,9 +73,9 @@ function GenerateCells(width) {
     _numberOfCellGroups = 0;
     let index = 0;
     let filled = false;
-    for(let i = 0; i < width; i++) {
+    for  (let i = 0; i < width; i++) {
         _cells[i] = [];
-        for(let j = 0; j < width; j++) {
+        for (let j = 0; j < width; j++) {
             _cells[i][j] = -1;
         }
     }
@@ -251,7 +254,8 @@ function RenderCells(width) {
 }
 
 function StartTimer() {
-    setTimeout(time, 1000, 1);
+    if (!_pause)
+        setTimeout(time, 1000, 1);
 }
 
 const time = delay => {
@@ -293,7 +297,7 @@ function ResetTimer() {
     document.getElementById("hours").innerHTML = ("0" + (0)).slice(-2);
     setTimeout(function() {
         _pause = false;
-        StartTimer();
+        //StartTimer();
     }, 1000);
 }
 
@@ -312,9 +316,12 @@ function NewPuzzle() {
 }
 
 function ResetPuzzle() {
-    let select = document.getElementById("size");
-    let width = select.options[select.selectedIndex].text;
-    CreateInputs(width);
+    for (let i = 0; i < _key.length; i++) {
+        for (let j = 0; j < _key.length; j++) {
+            document.getElementById(i + ',' + j).value = "";
+        }
+    }
+    ResetTimer();
 }
 
 function RevealSquare() {
@@ -323,7 +330,7 @@ function RevealSquare() {
 }
 
 function ShowSolution() {
-    let cells = document.getElementsByClassName("cell");
+    let cells = document.getElementsByClassName("input");
     for (let i = 0; i < _key.length; i++) {
         for (let j = 0; j < _key.length; j++) {
             let cell = cells[j + i * _key.length];
@@ -336,4 +343,16 @@ function UpdateFocus() {
     let current = document.activeElement;
     let position = current.getAttribute("id");
     _focus = [parseInt(position.charAt(0)), parseInt(position.charAt(2))];
+    CheckInputs();
+}
+
+function CheckInputs() {
+    let filled = true;
+    for (let i = 0; i < _cells.length; i++) {
+        for (let j = 0; j < _cells.length; j++) {
+            if (filled && document.getElementById(i + "," + j).value != _key[i][j]) {
+                filled = false;
+            }
+        }
+    }
 }
