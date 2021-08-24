@@ -120,6 +120,8 @@ html {
         width: 100%;
         max-height: calc(100vh - 250px);
         max-width: calc(100vh - 250px);
+        min-width: 280px;
+        min-height: 280px;
         &::after {
             content: "";
             display: block;
@@ -228,6 +230,12 @@ html {
     }
     #container {
         padding: 160px 20px;
+        #gridParent {
+            max-height: none;
+            max-width: none;
+            min-width: none;
+            min-height: none;
+        }
     }
     #footer {
         width: 100%;
